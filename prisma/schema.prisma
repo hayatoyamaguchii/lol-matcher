@@ -7,8 +7,20 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+model User {
+  id             Int           @id @default(autoincrement())
+  riotPuuid      String        @unique
+  riotGameName   String?
+  riotTagLine    String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  posts          Post[]        @relation("UserPosts")
+  participants   Participant[] @relation("UserParticipants")
+}
+
 model Post {
-  id              Int       @id @default(autoincrement())
+  id              Int           @id @default(autoincrement())
   userId          Int
   gameMode        String
   requiredPlayers Int
@@ -18,16 +30,17 @@ model Post {
   hasVoiceChat    Boolean
   discordUrl      String?
   description     String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
+  user            User          @relation(fields: [userId], references: [id], name: "UserPosts")
   tags            PostTag[]
+  participants    Participant[]
 }
 
 model Tag {
-  id   Int     @id @default(autoincrement())
-  name String  @unique
-
+  id    Int      @id @default(autoincrement())
+  name  String   @unique
   posts PostTag[]
 }
 
@@ -39,4 +52,17 @@ model PostTag {
   tag  Tag  @relation(fields: [tagId], references: [id])
 
   @@id([postId, tagId])
+}
+
+model Participant {
+  id        Int      @id @default(autoincrement())
+  postId   Int
+  userId   Int
+  status   String   @default("PENDING")
+  joinedAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id], name: "UserParticipants")
+
+  @@unique([postId, userId])
 }

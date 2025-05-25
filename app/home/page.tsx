@@ -4,9 +4,9 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Search as SearchIcon, Clear as ClearIcon } from "@mui/icons-material";
-import Card from "@/app/components/post";
+import Post from "@/app/components/post";
 
-type Post = {
+type PostType = {
     postId: string;
     title: string;
     tags: string[];
@@ -26,12 +26,12 @@ type Post = {
 
 export default function HomePage() {
     const [searchQuery, setSearchQuery] = useState("");
-    const [posts, setPosts] = useState<Post[]>([]);
+    const [posts, setPosts] = useState<PostType[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
             const response = await fetch("/api/posts");
-            const data = (await response.json()) as Post[];
+            const data = (await response.json()) as PostType[];
             setPosts(data);
         };
 
@@ -78,7 +78,7 @@ export default function HomePage() {
 
             <div className="grid grid-cols-2">
                 {posts.map((post) => (
-                    <Card key={post.postId} post={post} />
+                    <Post key={post.postId} post={post} />
                 ))}
             </div>
         </div>

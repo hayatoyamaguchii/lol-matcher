@@ -17,35 +17,6 @@ type Post = {
     description: string;
 };
 
-const mockPosts: Post[] = [
-    {
-        postId: "1",
-        postedAt: "2025-05-25T12:30:00.000Z",
-        posterId: "user1",
-        requiredPlayers: 5,
-        gameMode: "ランク",
-        rankCap: "プラチナ",
-        rankFloor: "ゴールド",
-        tags: ["#タグ1", "#タグ2"],
-        eventDateTime: "2025-05-25T13:00:00.000Z",
-        hasVoiceChat: true,
-        description: "一緒にランク上げしませんか？",
-    },
-    {
-        postId: "2",
-        postedAt: "2025-05-25T12:00:00.000Z",
-        posterId: "user2",
-        requiredPlayers: 3,
-        gameMode: "ノーマル",
-        rankCap: "制限なし",
-        rankFloor: "制限なし",
-        tags: ["#タグ3", "#タグ4"],
-        eventDateTime: "2025-05-25T14:00:00.000Z",
-        hasVoiceChat: false,
-        description: "楽しくノーマルしませんか？",
-    },
-];
-
 // 投稿一覧取得 (GET /posts)
 export async function GET(request: Request) {
     try {

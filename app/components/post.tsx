@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { useApply } from "@/app/hooks/useApply";
 import { MoreVert as MoreVertIcon } from "@mui/icons-material";
 
 interface Post {
@@ -15,11 +16,29 @@ interface Post {
     description: string;
 }
 
-interface CardProps {
+interface PostProps {
     post: Post;
 }
 
-const Card: React.FC<CardProps> = ({ post }) => {
+const Post: React.FC<PostProps> = ({ post }) => {
+    const { apply } = useApply();
+    const [isApplying, setIsApplying] = useState(false);
+    const [applied, setApplied] = useState(false);
+
+    const handleApply = async () => {
+        if (post.requiredPlayers === 0 || isApplying) return;
+        setIsApplying(true);
+
+        const { success, message } = await apply(post.postId);
+        alert(message);
+
+        if (success) {
+            setApplied(true);
+        }
+
+        setIsApplying(false);
+    };
+
     return (
         <div key={post.postId} className="bg-white rounded-lg p-4 m-4">
             <div className="flex items-center justify-between mb-2">
@@ -47,26 +66,30 @@ const Card: React.FC<CardProps> = ({ post }) => {
             <p className="text-gray-700">{post.description}</p>
 
             <div className="flex items-center justify-between mt-2">
-                <div className="flex items-center">
-                    {/* TODO: リンク系整える */}
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        プロフィール
-                    </button>
-                </div>
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    プロフィール
+                </button>
 
                 <div className="text-gray-600">{post.rankFloor}以上</div>
                 <div className="text-gray-600">{post.rankCap}以下</div>
-                <div>{post.hasVoiceChat}</div>
+                <div>{post.hasVoiceChat ? "VCあり" : "VCなし"}</div>
 
                 <button
                     className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                    disabled={post.requiredPlayers === 0}
+                    onClick={handleApply}
+                    disabled={
+                        post.requiredPlayers === 0 || isApplying || applied
+                    }
                 >
-                    {post.requiredPlayers > 0 ? "応募する" : "締切済み"}
+                    {applied
+                        ? "応募済み"
+                        : post.requiredPlayers > 0
+                        ? "応募する"
+                        : "締切済み"}
                 </button>
             </div>
         </div>
     );
 };
 
-export default Card;
+export default Post;

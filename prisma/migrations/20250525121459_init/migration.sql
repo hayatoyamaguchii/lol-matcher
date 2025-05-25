@@ -1,0 +1,50 @@
+-- CreateTable
+CREATE TABLE "User" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "riotPuuid" TEXT NOT NULL,
+    "riotGameName" TEXT,
+    "riotTagLine" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Participant" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "postId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'PENDING',
+    "joinedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Participant_postId_fkey" FOREIGN KEY ("postId") REFERENCES "Post" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Participant_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- RedefineTables
+PRAGMA defer_foreign_keys=ON;
+PRAGMA foreign_keys=OFF;
+CREATE TABLE "new_Post" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "userId" INTEGER NOT NULL,
+    "gameMode" TEXT NOT NULL,
+    "requiredPlayers" INTEGER NOT NULL,
+    "rankFloor" TEXT,
+    "rankCap" TEXT,
+    "eventDateTime" DATETIME,
+    "hasVoiceChat" BOOLEAN NOT NULL,
+    "discordUrl" TEXT,
+    "description" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Post_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+INSERT INTO "new_Post" ("createdAt", "description", "discordUrl", "eventDateTime", "gameMode", "hasVoiceChat", "id", "rankCap", "rankFloor", "requiredPlayers", "updatedAt", "userId") SELECT "createdAt", "description", "discordUrl", "eventDateTime", "gameMode", "hasVoiceChat", "id", "rankCap", "rankFloor", "requiredPlayers", "updatedAt", "userId" FROM "Post";
+DROP TABLE "Post";
+ALTER TABLE "new_Post" RENAME TO "Post";
+PRAGMA foreign_keys=ON;
+PRAGMA defer_foreign_keys=OFF;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_riotPuuid_key" ON "User"("riotPuuid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Participant_postId_userId_key" ON "Participant"("postId", "userId");
