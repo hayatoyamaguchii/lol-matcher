@@ -1,18 +1,42 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
 
-model User {
-  id       Int    @id @default(autoincrement())
-  username String @unique
-  password String
+model Post {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  gameMode        String
+  requiredPlayers Int
+  rankFloor       String?
+  rankCap         String?
+  eventDateTime   DateTime?
+  hasVoiceChat    Boolean
+  discordUrl      String?
+  description     String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  tags            PostTag[]
+}
+
+model Tag {
+  id   Int     @id @default(autoincrement())
+  name String  @unique
+
+  posts PostTag[]
+}
+
+model PostTag {
+  postId Int
+  tagId  Int
+
+  post Post @relation(fields: [postId], references: [id])
+  tag  Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([postId, tagId])
 }

@@ -8,12 +8,12 @@ export async function POST(request: Request) {
     if (true) {
         const response = NextResponse.json({ success: true });
 
-        response.cookies.set("isAuthenticated", "true", {
-            httpOnly: true,
-            path: "/",
-            secure: process.env.NODE_ENV === "production",
-            maxAge: 60 * 60 * 24 * 7, // 1週間
-        });
+        // response.cookies.set("isAuthenticated", "true", {
+        //     httpOnly: true,
+        //     path: "/",
+        //     secure: process.env.NODE_ENV === "production",
+        //     maxAge: 60 * 60 * 24 * 7, // 1週間
+        // });
 
         return response;
     }

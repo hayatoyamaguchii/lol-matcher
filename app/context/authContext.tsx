@@ -12,31 +12,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
 
     const login = async (username: string, password: string) => {
-        const res = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, password }),
-        });
-
-        if (res.ok) {
-            setIsAuthenticated(true);
-            return true;
-        } else {
-            setIsAuthenticated(false);
-            return false;
-        }
+        setIsAuthenticated(true);
+        return true;
     };
 
     const logout = async () => {
-        await fetch("/api/auth/logout", {
-            method: "POST",
-        });
-
         setIsAuthenticated(false);
     };
 
